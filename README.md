@@ -3,8 +3,8 @@ A Skype Bot Api Adapter for Hubot
 
 ## Installation
 
-Signup to Skype Bot Platform preview https://www.skype.com/en/developer/signup/
-Follow https://developer.microsoft.com/en-us/skype/bots/docs to create new bot and obtain Application ID and Microsoft Application Secret
+* Signup to the Skype Bot Platform preview https://www.skype.com/en/developer/signup/
+* Follow https://developer.microsoft.com/en-us/skype/bots/docs to create new bot and obtain Application ID and Microsoft Application Secret
 
 * `npm install --save hubot-skypebots`
 * Run hubot `bin/hubot -a skypebots`
