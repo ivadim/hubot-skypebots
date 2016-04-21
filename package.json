@@ -1,0 +1,36 @@
+{
+  "name": "hubot-skypebots",
+  "version": "1.0.0",
+  "description": "A Skype Bot Api Adapter for Hubot",
+  "main": "src/skypebots",
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register --reporter spec"
+  },
+  "keywords": [
+    "hubot",
+    "adapter",
+    "skype",
+    "skypebots"
+  ],
+  "author": "iva9im@gmail.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivadim/hubot-skypebots.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ivadim/hubot-skypebots/issues"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coffee-script": ">=1.2.0",
+    "hubot-test-helper": "^1.4.4",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0"
+  },
+  "dependencies": {
+    "hubot": "*",
+    "request": "^2.67.0"
+  }
+}
