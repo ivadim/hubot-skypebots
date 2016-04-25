@@ -21,7 +21,6 @@ class SkypeChatClient extends EventEmitter
        "grant_type"    : 'client_credentials'
        "scope"         : 'https://graph.microsoft.com/.default'
        
-    @logger.info options
     @_listen options.listenPath
     
     @auth = {}
@@ -29,7 +28,7 @@ class SkypeChatClient extends EventEmitter
   send: (conversationId, message) ->
     @_withAuth (err, auth) =>
       if err
-        @logger.error err
+        @emit 'error', err
       else
         requestOptions =
           "url": "#{@skypeApiUrl}/conversations/#{conversationId}/activities/"
@@ -39,7 +38,7 @@ class SkypeChatClient extends EventEmitter
           
         request.post requestOptions, (err, response, body) =>
           if err
-            @logger.error(err)
+            @emit 'error', err
           else
             @logger.debug("Successfully send message: '#{message}' to #{conversationId}")
           
@@ -61,28 +60,34 @@ class SkypeChatClient extends EventEmitter
     @robot.router.post path, (req, res) =>
       @logger.debug "Skype Chat Client received data:"
       @logger.debug "\t#{JSON.stringify(req.body)}"
+      
       for event in req.body
-        activity = event.activity
-        switch activity
-          when 'message'
-            @emit 'MessageReceived', event
-          when 'contactRelationUpdate'
-            if event.action == 'add'
-              @emit 'ContactAdded', event
-            else
-              @emit 'ContactRemoved', event
-          when 'conversationUpdate'
-            @emit('TopicUpdated', event) if event.topicName
-            @emit('MembersAdded', event) if event.membersAdded
-            @emit('MembersRemoved', event) if event.membersRemoved
-            @emit('HistoryDisclosed', event) if event.historyDisclosed
-          when 'attachment'
-            @logger.info 'attachment event is unsupported'
-          else
-            @logger.warn "Received unsuppored event type #{activity}"
-        @emit event.activity, event
+        _handleInputEvent event
+        
+      res.send 'OK'
       
-      
+  _handleInputEvent: (event) ->
+    activity = event.activity
+    switch activity
+      when 'message'
+        @emit 'MessageReceived', event
+      when 'contactRelationUpdate'
+        if event.action == 'add'
+          @emit 'ContactAdded', event
+        else
+          @emit 'ContactRemoved', event
+      when 'conversationUpdate'
+        @emit('TopicUpdated', event) if event.topicName
+        @emit('MembersAdded', event) if event.membersAdded
+        @emit('MembersRemoved', event) if event.membersRemoved
+        @emit('HistoryDisclosed', event) if event.historyDisclosed
+      when 'attachment'
+        @logger.info 'attachment event is unsupported'
+      else
+        @logger.warn "Received unsuppored event type #{activity}"
+    @emit event.activity, event
+        
+           
   _wrapMessage: (message) ->
     return {"message": {"content": message}}
        

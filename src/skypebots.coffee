@@ -8,7 +8,7 @@ class SkypeBots extends Adapter
 
   send: (envelope, strings...) ->
     message = strings.join()
-    message = @skype.escape(message)
+    #message = @skype.escape(message)
     if envelope.room == 'private'
       @skype.send envelope.user.id, message
     else

@@ -50,3 +50,67 @@ describe 'SkypeChatClient', ->
       auth = null
       expect(@skype._isOauthTokenValid(auth)).to.equal(false)
     
+    
+  describe '_handleInputEvent', ->
+    it 'should be a message event', ->
+      spy = sinon.spy()
+      @skype.on 'MessageReceived', spy
+      event =
+        "activity": 'message'
+      @skype._handleInputEvent event
+      expect(spy.called).to.equal(true)
+      
+    it 'should add contact', ->
+      spy = sinon.spy()
+      @skype.on 'ContactAdded', spy
+      event =
+        "activity": "contactRelationUpdate"
+        "action": "add"
+      @skype._handleInputEvent event
+      expect(spy.called).to.equal(true)
+      
+    it 'should remove contact', ->
+      spy = sinon.spy()
+      @skype.on 'ContactRemoved', spy
+      event =
+        "activity": "contactRelationUpdate"
+        "action": "remove"
+      @skype._handleInputEvent event
+      expect(spy.called).to.equal(true)
+      
+    it 'should remove contact', ->
+      spy = sinon.spy()
+      @skype.on 'ContactRemoved', spy
+      event =
+        "activity": "contactRelationUpdate"
+        "action": "remove"
+      @skype._handleInputEvent event
+      expect(spy.called).to.equal(true)
+      
+    it 'should update topic', ->
+      spy = sinon.spy()
+      @skype.on 'TopicUpdated', spy
+      event =
+        "activity": "conversationUpdate"
+        "topicName": "winter is coming"
+      @skype._handleInputEvent event
+      expect(spy.called).to.equal(true)
+      
+    it 'should add members', ->
+      spy = sinon.spy()
+      @skype.on 'MembersAdded', spy
+      event =
+        "activity": "conversationUpdate"
+        "membersAdded": ["8:jonsnow", "8:samtarly"]
+      @skype._handleInputEvent event
+      expect(spy.called).to.equal(true)
+      
+    it 'should remove members', ->
+      spy = sinon.spy()
+      @skype.on 'MembersRemoved', spy
+      event =
+        "activity": "conversationUpdate"
+        "membersRemoved": ["8:nedstark", "8:jeormormont"]
+      @skype._handleInputEvent event
+      expect(spy.called).to.equal(true)
+      
