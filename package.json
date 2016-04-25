@@ -1,6 +1,6 @@
 {
   "name": "hubot-skypebots",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Skype Bot Api Adapter for Hubot",
   "main": "src/skypebots",
   "scripts": {

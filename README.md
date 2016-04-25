@@ -1,6 +1,7 @@
 A Skype Bot Api Adapter for Hubot
 --------------------------------
-
+[![Build Status](https://travis-ci.org/ivadim/hubot-skypebots.svg?branch=master)](https://travis-ci.org/ivadim/hubot-skypebots)
+[![npm version](https://badge.fury.io/js/hubot-skypebots.svg)](https://badge.fury.io/js/hubot-skypebots)
 ## Installation
 
 * Signup to the Skype Bot Platform preview https://www.skype.com/en/developer/signup/
