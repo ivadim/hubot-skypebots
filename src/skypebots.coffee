@@ -8,7 +8,7 @@ class SkypeBots extends Adapter
 
   send: (envelope, strings...) ->
     message = strings.join()
-    #message = @skype.escape(message)
+    message = @skype.escape(message) unless envelope?.escape == false
     if envelope.room == 'private'
       @skype.send envelope.user.id, message
     else
@@ -45,7 +45,6 @@ class SkypeBots extends Adapter
     # # register events
     @skype.on 'MessageReceived', (event) =>
       user = @getUser(event)
-      @robot.logger.info(user)
       @receive new TextMessage user, event.content.trim()
       
     

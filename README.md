@@ -25,3 +25,18 @@ export SKYPE_BOTS_LISTEN_PATH=/skype
 `bin/hubot -a skypebots`
 ```
 
+By default html entities "<",">" and "&" are escaped. To disable this functionality you can to set 'envelope.escape' to false. 
+Bear in mind that Skype doesn't allow some html tags and silently ignores messages with unclosed tags.
+
+```
+  robot.respond /small/i, (res) ->
+    html = "<font size=\"15\">It's small</font>"
+    res.send html
+```
+
+```
+  robot.respond /big/i, (res) ->
+    res.envelope.escape = false
+    html = "<font size=\"15\">It's big</font>"
+    res.send html
+```
