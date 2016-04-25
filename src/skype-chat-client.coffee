@@ -62,7 +62,7 @@ class SkypeChatClient extends EventEmitter
       @logger.debug "\t#{JSON.stringify(req.body)}"
       
       for event in req.body
-        _handleInputEvent event
+        @_handleInputEvent event
         
       res.send 'OK'
       
