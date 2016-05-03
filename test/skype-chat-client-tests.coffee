@@ -5,6 +5,48 @@ chai.use require 'sinon-chai'
 expect = chai.expect
 
 {SkypeChatClient} = require('./../src/skype-chat-client')
+{User} = require 'hubot'
+SkypeAdapter = require('./../src/skypebots')
+
+describe 'SkypeBotsAdapter', ->
+
+  beforeEach ->
+    @bots = SkypeAdapter.use null
+    
+  describe '_getConversationId', ->
+    it 'Should be a private room', ->
+      user = new User('8:varys')
+      user.room = 'private'
+      expect(@bots._getConversationId(user)).to.equal('8:varys')
+
+    it 'Should be a chat room', ->
+      user = new User('8:daenerys')
+      user.room = '19:meereen@thread.skype'
+      expect(@bots._getConversationId(user)).to.equal('19:meereen@thread.skype')
+      
+  describe '_getFileNameOrDefault', ->
+    it 'it should return name from event', ->
+      event =
+        "name": "westeros.jpg"
+        "type": "Image"
+      expect(@bots._getFileNameOrDefault(event)).to.equal('westeros.jpg')
+      
+    it 'it should return default value for Image', ->
+      event =
+        "type": "Image"
+      expect(@bots._getFileNameOrDefault(event)).to.equal('image.jpg')
+      
+    it 'it should return default value for Video', ->
+      event =
+        "type": "Video"
+      expect(@bots._getFileNameOrDefault(event)).to.equal('video.mp4')
+      
+    it 'it should return default value for File', ->
+      event =
+        "type": "File"
+      expect(@bots._getFileNameOrDefault(event)).to.equal('file.txt')
+        
+  
 
 describe 'SkypeChatClient', ->
   beforeEach ->
@@ -110,7 +152,7 @@ describe 'SkypeChatClient', ->
       @skype.on 'MembersRemoved', spy
       event =
         "activity": "conversationUpdate"
-        "membersRemoved": ["8:nedstark", "8:jeormormont"]
+        "membersRemoved": ["8:nedstark", "8:robertbaratheon"]
       @skype._handleInputEvent event
       expect(spy.called).to.equal(true)
       

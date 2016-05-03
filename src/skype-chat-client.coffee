@@ -21,8 +21,6 @@ class SkypeChatClient extends EventEmitter
        "grant_type"    : 'client_credentials'
        "scope"         : 'https://graph.microsoft.com/.default'
        
-    @_listen options.listenPath
-    
     @auth = {}
   
   send: (conversationId, message) ->
@@ -41,7 +39,50 @@ class SkypeChatClient extends EventEmitter
             @emit 'error', err
           else
             @logger.debug("Successfully send message: '#{message}' to #{conversationId}")
-          
+   
+   
+  downloadAttachment: (attachmentId, viewId, callback) ->
+    robot = @robot
+    @_withAuth (err, auth) =>
+      if err
+        callback err
+      else
+        requestOptions =
+          "url": "#{@skypeApiUrl}/attachments/#{attachmentId}/views/#{viewId}"
+          "auth": "bearer": auth.token
+          encoding: null
+        
+        callback null, request.get requestOptions
+           
+  uploadAttchment: (conversationId, name, type, originStream, thumbnailStream) ->
+    robot = @robot
+    @_withAuth (err, auth) =>
+      if err
+        @emit 'error', err
+      else
+        @_stream_to_base64 originStream, (originBase64str) =>
+          @_stream_to_base64 thumbnailStream, (thumbnailBase64str) =>
+            body =
+              "name": name
+              "type": type
+              "originalBase64": originBase64str
+              "thumbnailBase64": thumbnailBase64str
+              
+            requestOptions =
+              "url": "#{@skypeApiUrl}/conversations/#{conversationId}/attachments"
+              "json": true
+              "auth": "bearer": auth.token
+              "body": body
+              encoding: null
+            
+            request.post requestOptions, (err, response, body) =>
+              if err
+                @emit 'error', err
+              else
+                @logger.debug("Successfully send attachment #{name} " +
+                      "of type #{type} to #{conversationId}")
+
+            
   skypeIdToName: (id) ->
     id.substring(id.indexOf(":") + 1, id.length)
     
@@ -54,18 +95,18 @@ class SkypeChatClient extends EventEmitter
     to = event.to
     suffix = '@thread.skype'
     return to.indexOf(suffix, to.length - suffix.length) != -1
-        
-  _listen: (path) ->
-    @logger.info "Skype Chat Client is listening requests on #{path}"
-    @robot.router.post path, (req, res) =>
-      @logger.debug "Skype Chat Client received data:"
-      @logger.debug "\t#{JSON.stringify(req.body)}"
-      
-      for event in req.body
-        @_handleInputEvent event
-        
-      res.send 'OK'
-      
+  
+  _stream_to_base64: (stream, callback) ->
+    unless stream
+      callback null
+    else
+      chunks = []
+      stream.on 'data', (chunk) ->
+        chunks.push(chunk)
+      stream.on 'end', ->
+        result = Buffer.concat(chunks)
+        callback result.toString('base64')
+       
   _handleInputEvent: (event) ->
     activity = event.activity
     switch activity
@@ -82,7 +123,7 @@ class SkypeChatClient extends EventEmitter
         @emit('MembersRemoved', event) if event.membersRemoved
         @emit('HistoryDisclosed', event) if event.historyDisclosed
       when 'attachment'
-        @logger.info 'attachment event is unsupported'
+        @emit 'AttachmentReceived', event
       else
         @logger.warn "Received unsuppored event type #{activity}"
     @emit event.activity, event
