@@ -1,3 +1,4 @@
+Depricated repository. This project isn't suppoted anymore. Please use official [Microsoft Bot SDK](https://docs.botframework.com/en-us/skype/getting-started) which has more features!
 A Skype Bot Api Adapter for Hubot
 --------------------------------
 [![Build Status](https://travis-ci.org/ivadim/hubot-skypebots.svg?branch=master)](https://travis-ci.org/ivadim/hubot-skypebots)
